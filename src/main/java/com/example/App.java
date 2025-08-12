@@ -1,6 +1,6 @@
-import java.util.logging.Logger;
-package com.example;
 
+package com.example;
+import java.util.logging.Logger;
 /**
  * Hello world!
  *
