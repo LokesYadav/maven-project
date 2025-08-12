@@ -37,7 +37,7 @@ pipeline {
                         -Dsonar.projectKey=maven-project \
                         -Dsonar.projectName="Maven Project" \
                         -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.token=${SONARQUBE_AUTH_TOKEN1}
+                        -Dsonar.login=${SONARQUBE_AUTH_TOKEN1}
                     '''
                 }
             }
