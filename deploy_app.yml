@@ -1,0 +1,19 @@
+---
+- name: Deploy Maven App
+  hosts: app_servers
+  become: yes
+  tasks:
+    - name: Download artifact from JFrog
+      get_url:
+        url: "http://10.28.218.243:8082/ui/repos/tree/General/my-repo-local/maven-demo-1.0-SNAPSHOT.jar"
+        dest: /opt/maven-project.jar
+        mode: '0755'
+        url_username: admin
+        url_password: "{{ Password1 }}"
+        force_basic_auth: yes
+
+    - name: Stop existing app (if running)
+      shell: "pkill -f 'java -jar /opt/maven-project.jar' || true"
+
+    - name: Start the application
+      shell: "nohup java -jar /opt/maven-project.jar > /opt/maven-app.log 2>&1 &"
