@@ -7,7 +7,9 @@ pipeline {
     }
 
     environment {
-        SONARQUBE_ENV = 'LocalSonar' // Must match the name in Jenkins → Manage Jenkins → Configure System
+        SONARQUBE_ENV = 'LocalSonar' // Jenkins → Manage Jenkins → Configure System
+        JFROG_SERVER_ID = 'artifactory-server' // Must match Jenkins Artifactory config
+        JFROG_REPO = 'my-repo-local'           // Name of local repo in JFrog
     }
 
     stages {
@@ -48,14 +50,38 @@ pipeline {
                 sh 'mvn package'
             }
         }
+
+        stage('Upload to JFrog') {
+            steps {
+                rtUpload (
+                    serverId: "${JFROG_SERVER_ID}",
+                    spec: """{
+                        "files": [
+                            {
+                                "pattern": "target/*.war",
+                                "target": "${JFROG_REPO}/"
+                            }
+                        ]
+                    }"""
+                )
+            }
+        }
+
+        stage('Publish Build Info') {
+            steps {
+                rtPublishBuildInfo(
+                    serverId: "${JFROG_SERVER_ID}"
+                )
+            }
+        }
     }
 
     post {
         success {
-            echo 'Build completed successfully!'
+            echo '✅ Build and upload to JFrog completed successfully!'
         }
         failure {
-            echo 'Build failed!'
+            echo '❌ Build failed!'
         }
     }
 }
