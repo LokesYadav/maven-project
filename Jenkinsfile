@@ -74,6 +74,16 @@ pipeline {
                 )
             }
         }
+
+        stage('Deploy via Ansible') {
+            steps {
+                echo "🚀 Starting deployment using Ansible..."
+                sh """
+                    ansible-playbook -i ${INVENTORY_FILE} ${PLAYBOOK_FILE} \
+                    -u ${ANSIBLE_USER} --private-key /home/jenkins/.ssh/id_rsa
+                """
+            }
+        }
     }
 
     post {
