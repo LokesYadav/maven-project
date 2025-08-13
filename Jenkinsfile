@@ -58,7 +58,7 @@ pipeline {
                     spec: """{
                         "files": [
                             {
-                                "pattern": "target/*.war",
+                                "pattern": "target/*.jar",
                                 "target": "${JFROG_REPO}/"
                             }
                         ]
