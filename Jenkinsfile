@@ -56,7 +56,6 @@ pipeline {
                 sh '''
                     ARTIFACT=$(ls target/*.jar | head -n 1)
                     BASENAME=$(basename "$ARTIFACT" .jar)
-                    mv "$ARTIFACT" "target/${BASENAME}-${BUILD_NUMBER}.jar"
                 '''
             }
         }
