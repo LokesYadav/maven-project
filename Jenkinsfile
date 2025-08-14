@@ -67,7 +67,7 @@ pipeline {
                     spec: """{
                         "files": [
                             {
-                                "pattern": "target/*-${BUILD_NUMBER+11}.jar",
+                                "pattern": "target/*-${BUILD_NUMBER}.jar",
                                 "target": "${JFROG_REPO}/${env.JOB_NAME}/${env.BUILD_NUMBER}/"
                             }
                         ]
