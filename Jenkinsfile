@@ -7,9 +7,10 @@ pipeline {
     }
 
     environment {
-        SONARQUBE_ENV = 'LocalSonar' // Jenkins → Manage Jenkins → Configure System
-        JFROG_SERVER_ID = 'artifactory-server' // Must match Jenkins Artifactory config
-        JFROG_REPO = 'my-repo-local'           // Name of local repo in JFrog
+        SONARQUBE_ENV = 'LocalSonar' 
+        JFROG_SERVER_ID = 'artifactory-server' 
+        JFROG_REPO = 'my-repo-local'          
+        COUNTER_FILE = "${WORKSPACE}/counter.txt"
     }
 
     stages {
@@ -18,7 +19,20 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/LokesYadav/maven-project.git'
             }
         }
-
+         stage('Update Counter') {
+            steps {
+                script {
+                    if (fileExists(env.COUNTER_FILE)) {
+                        counter = readFile(env.COUNTER_FILE).trim().toInteger() + 1
+                    } else {
+                        counter = 1
+                    }
+                    writeFile file: env.COUNTER_FILE, text: counter.toString()
+                    echo "🔢 Job run counter: ${counter}"
+                    env.JOB_RUN_COUNTER = counter.toString()
+                }
+            }
+        }
         stage('Build') {
             steps {
                 sh 'mvn clean compile'
@@ -45,30 +59,22 @@ pipeline {
             }
         }
 
-        stage('Package') {
+       stage('Package') {
             steps {
-                sh 'mvn package'
+                sh "mvn package -Djar.finalName=maven-project-${env.JOB_RUN_COUNTER}"
             }
         }
 
-        stage('Rename Artifact with Build Number') {
-            steps {
-                sh '''
-                    ARTIFACT=$(ls target/*.jar | head -n 1)
-                    BASENAME=$(basename "$ARTIFACT" .jar)
-                '''
-            }
-        }
 
-        stage('Upload to JFrog') {
+       stage('Upload to JFrog') {
             steps {
                 rtUpload (
                     serverId: "${JFROG_SERVER_ID}",
                     spec: """{
                         "files": [
                             {
-                                "pattern": "target/*-${BUILD_NUMBER}.jar",
-                                "target": "${JFROG_REPO}/${env.JOB_NAME}/${env.BUILD_NUMBER}/"
+                                "pattern": "target/maven-project-${env.JOB_RUN_COUNTER}.jar",
+                                "target": "${JFROG_REPO}/"
                             }
                         ]
                     }"""
