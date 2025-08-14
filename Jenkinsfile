@@ -7,9 +7,9 @@ pipeline {
     }
 
     environment {
-        SONARQUBE_ENV = 'LocalSonar' // Jenkins → Manage Jenkins → Configure System
+        SONARQUBE_ENV = 'LocalSonar' 
         JFROG_SERVER_ID = 'artifactory-server' // Must match Jenkins Artifactory config
-        JFROG_REPO = 'my-repo-local'           // Name of local repo in JFrog
+        JFROG_REPO = 'my-repo-local'         
     }
 
     stages {
