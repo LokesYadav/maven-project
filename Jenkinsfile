@@ -51,6 +51,16 @@ pipeline {
             }
         }
 
+        stage('Rename Artifact with Build Number') {
+            steps {
+                sh '''
+                    ARTIFACT=$(ls target/*.jar | head -n 1)
+                    BASENAME=$(basename "$ARTIFACT" .jar)
+                    mv "$ARTIFACT" "target/${BASENAME}-${BUILD_NUMBER}.jar"
+                '''
+            }
+        }
+
         stage('Upload to JFrog') {
             steps {
                 rtUpload (
@@ -58,8 +68,8 @@ pipeline {
                     spec: """{
                         "files": [
                             {
-                                "pattern": "target/*.jar",
-                                "target": "${JFROG_REPO}/"
+                                "pattern": "target/*-${BUILD_NUMBER}.jar",
+                                "target": "${JFROG_REPO}/${env.JOB_NAME}/${env.BUILD_NUMBER}/"
                             }
                         ]
                     }"""
@@ -74,8 +84,6 @@ pipeline {
                 )
             }
         }
-
-       
     }
 
 //     post {
