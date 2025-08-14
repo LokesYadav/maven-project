@@ -78,11 +78,27 @@ pipeline {
        
     }
 
+//     post {
+//         success {
+//             echo '✅ Build and upload to JFrog completed successfully!'
+//         }
+//         failure {
+//             echo '❌ Build failed!'
+//         }
+//     }
+// }
+
     post {
         success {
+            mail to: 'lokeshydv20@gmail.com',
+                 subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Good news! The build succeeded. Check details here: ${env.BUILD_URL}"
             echo '✅ Build and upload to JFrog completed successfully!'
         }
         failure {
+            mail to: 'lokeshydv20@gmail.com',
+                 subject: "FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Oops! The build failed. Check details here: ${env.BUILD_URL}"
             echo '❌ Build failed!'
         }
     }
